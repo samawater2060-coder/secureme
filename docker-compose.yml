@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: secureme
+      POSTGRES_PASSWORD: secureme
+      POSTGRES_DB: secureme
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - secureme
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - secureme
+
+  server:
+    build: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      LISTEN_ADDR: ":8080"
+      DB_URL: "postgres://secureme:secureme@postgres:5432/secureme?sslmode=disable"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - secureme
+
+  web:
+    build: ./web
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    networks:
+      - secureme
+
+volumes:
+  postgres_data:
+
+networks:
+  secureme:
