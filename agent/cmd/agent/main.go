@@ -111,7 +111,7 @@ func saveState(path string, s *agentState) error {
 
 // ---- Enroll ----
 
-func enroll(client *http.Client, serverURL, enrollKey string, logger *log.Logger) (*agentState, error) {
+func enroll(client *http.Client, serverURL, enrollKey string, _ *log.Logger) (*agentState, error) {
 	hostname, _ := os.Hostname()
 	ip := localIP()
 
@@ -139,7 +139,6 @@ func enroll(client *http.Client, serverURL, enrollKey string, logger *log.Logger
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("decode enroll response: %w", err)
 	}
-	_ = logger
 	return &agentState{DeviceID: result.DeviceID, AgentToken: result.AgentToken}, nil
 }
 
